@@ -180,3 +180,4 @@ gh-pages: html
 	# fix for github's jekyll
 	touch $(BUILDDIR)/html/.nojekyll
 	gittar -m "Updated gh-pages (built from `git describe --always --tags`)." -b gh-pages 'file:_build/html/*' 'file:_build/html/.nojekyll'
+	git push origin gh-pages
