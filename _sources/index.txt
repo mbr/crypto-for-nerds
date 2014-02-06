@@ -7,6 +7,8 @@ the second part explains why these steps were chosen, allowing any reader to
 dig in as deep as he wants to.
 
 Any feedback and comments or suggestions for improvement are *very* welcome.
+Source for this document is available at
+https://github.com/mbr/crypto-for-nerds.
 
 Steps to prepare a Raspberry Pi
 -------------------------------
