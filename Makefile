@@ -177,4 +177,4 @@ pseudoxml:
 	@echo "Build finished. The pseudo-XML files are in $(BUILDDIR)/pseudoxml."
 
 gh-pages: html
-	gittar -m 'Updated gh-pages.' -b gh-pages 'file:_build/html/*'
+	gittar -m "Updated gh-pages (built from `git describe --always --tags`)." -b gh-pages 'file:_build/html/*'
