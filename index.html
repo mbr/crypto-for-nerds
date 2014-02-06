@@ -1,0 +1,232 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Crypto for nerds &mdash; Crypto for nerds 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/better.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="Crypto for nerds 0.1 documentation" href="#" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  </head>
+  <body>
+    <header id="pageheader"><h1><a href="# ">
+        Crypto for nerds 0.1 documentation
+    </a></h1></header>
+  <div class="related top">
+  <nav id="rellinks">
+    <ul>
+    </ul>
+  </nav>
+  <nav id="breadcrumbs">
+    <ul>
+      <li><a href="#">Crypto for nerds 0.1 documentation</a></li> 
+    </ul>
+  </nav>
+  </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="crypto-for-nerds">
+<h1>Crypto for nerds<a class="headerlink" href="#crypto-for-nerds" title="Permalink to this headline">¶</a></h1>
+<p>This documents is supposed to be an easy to follow guide for best-practices
+when using <a class="reference external" href="https://en.wikipedia.org/wiki/GNU_Privacy_Guard">GPG</a>. The first part is a concise recipe that is easy to follow,
+the second part explains why these steps were chosen, allowing any reader to
+dig in as deep as he wants to.</p>
+<p>Any feedback and comments or suggestions for improvement are <em>very</em> welcome.</p>
+<div class="section" id="steps-to-prepare-a-raspberry-pi">
+<h2>Steps to prepare a Raspberry Pi<a class="headerlink" href="#steps-to-prepare-a-raspberry-pi" title="Permalink to this headline">¶</a></h2>
+<ol class="arabic">
+<li><p class="first">Download a raspbian image from <a class="reference external" href="http://www.raspberrypi.org/downloads">http://www.raspberrypi.org/downloads</a>.
+Check the SHA-1 checksum:</p>
+<div class="highlight-python"><div class="highlight"><pre>9d0afbf932ec22e3c29d793693f58b0406bcab86  2014-01-07-wheezy-raspbian.zip
+</pre></div>
+</div>
+</li>
+<li><p class="first">Unzip and write to an sdcard:</p>
+<div class="highlight-python"><div class="highlight"><pre>cd /tmp
+unzip 2014-01-07-wheezy-raspbian.zip
+sudo dd if=2014-01-07-wheezy-raspbian.img of=/dev/sdX bs=4M
+</pre></div>
+</div>
+</li>
+<li><p class="first">Boot the SD-card in the Raspberry Pi, with a network cable plugged in.</p>
+</li>
+<li><p class="first">Login as <tt class="docutils literal"><span class="pre">pi</span></tt>, password <tt class="docutils literal"><span class="pre">raspberry</span></tt>. Set a new password:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">passwd</span>
+</pre></div>
+</div>
+</li>
+<li><p class="first">Update the system:</p>
+<div class="highlight-python"><div class="highlight"><pre>sudo apt-get update
+sudo apt-get dist-upgrade
+</pre></div>
+</div>
+</li>
+</ol>
+<ol class="arabic" start="5">
+<li><p class="first">Activate the hardware random number generator:</p>
+<div class="highlight-python"><div class="highlight"><pre>echo &#39;bcm2708_rng&#39; | sudo tee -a /etc/modules
+sudo modprobe bcm2708_rng
+sudo apt-get install rng-tools
+</pre></div>
+</div>
+</li>
+<li><p class="first"><strong>Unplug</strong> the network cable (or remove the WiFi module).</p>
+</li>
+</ol>
+</div>
+</div>
+<div class="section" id="reasoning-behind-advice-above">
+<h1>Reasoning behind advice above<a class="headerlink" href="#reasoning-behind-advice-above" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="why-a-raspberry-pi">
+<h2>Why a Raspberry Pi?<a class="headerlink" href="#why-a-raspberry-pi" title="Permalink to this headline">¶</a></h2>
+<p>TBW</p>
+</div>
+<div class="section" id="a-reasonably-random-rng-on-the-pi">
+<h2>A reasonably random RNG on the Pi<a class="headerlink" href="#a-reasonably-random-rng-on-the-pi" title="Permalink to this headline">¶</a></h2>
+<p>The LRNG (Linux random number generator) isn&#8217;t perfect[1]_, nor is the hardware
+random number generator supplied by Broadcom, as there aren&#8217;t enough technical
+specifications published. The best no-effort bet currently available seems to
+be using a combination of both and hoping that at least one lives up to its
+security promises[2]_.</p>
+<p>rng-tools includes the <a class="reference external" href="http://man.he.net/man8/rngd">rngd</a>, which is sparse on documentation. It will add
+entropy to the kernel&#8217;s own entropy pool, 512 bits every 60 seconds with the
+default configuration (which will use /dev/hwrng as the input device) unless
+there are already at least 2048 bits available. Since the kernel will itself
+generate entropy from events like installing the necessary software, running
+<a class="reference external" href="https://en.wikipedia.org/wiki/GNU_Privacy_Guard">GPG</a> or entering the passphrase, there should be randomness from both sources
+used to generate the gpg-key.</p>
+<p>Keep in mind that less entropy is available on a Raspberry Pi. Normally, the
+LRNG uses[1]_ events like keyboard input, mouse events, interrupts, network
+traffic and disk I/O times from physical harddrives. On the Pi, usually there&#8217;s
+no mouse connected, there are fewer interrupts and we&#8217;re not operating with a
+network connection. The disk I/O part is far less useful when no moving parts
+are involved (as is the case with SD-cards), leaving on the keyboard as a
+reasonable entropy source.</p>
+</div>
+<div class="section" id="offline-use">
+<h2>Offline use<a class="headerlink" href="#offline-use" title="Permalink to this headline">¶</a></h2>
+<p>Not connecting the machine with the &#8220;master&#8221; key to the internet has numerous
+advantages, mainly it&#8217;s much harder to access the private key from the outside
+<a class="footnote-reference" href="#id4" id="id1">[3]</a>. This still means that great
+care must be taken that the installed software is not compromised, otherwise
+there are many ways to <a class="reference external" href="http://blog.cr.yp.to/20140205-entropy.html">smuggle out</a> information about the secret key
+- or generate bad keys altogether.</p>
+<table class="docutils footnote" frame="void" id="id2" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label">[1]</td><td><a class="reference external" href="http://www.cs.utk.edu/~dunigan/cns05/AnalysisOfLinuxRNG.pdf">http://www.cs.utk.edu/~dunigan/cns05/AnalysisOfLinuxRNG.pdf</a> &#8211; although
+this paper is fairly old and the kernel has been improved since.</td></tr>
+</tbody>
+</table>
+<table class="docutils footnote" frame="void" id="id3" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label">[2]</td><td>Original description for turning on the hwrng:
+<a class="reference external" href="http://vk5tu.livejournal.com/43059.html">http://vk5tu.livejournal.com/43059.html</a></td></tr>
+</tbody>
+</table>
+<table class="docutils footnote" frame="void" id="id4" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id1">[3]</a></td><td>Assuming you&#8217;re trusting your hardware not to spy on you:
+<a class="reference external" href="http://www.spiegel.de/international/world/the-nsa-uses-powerful-toolbox">http://www.spiegel.de/international/world/the-nsa-uses-powerful-toolbox</a>
+-in-effort-to-spy-on-global-networks-a-940969.html</td></tr>
+</tbody>
+</table>
+<table class="docutils footnote" frame="void" id="id5" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label">[4]</td><td>OpenBSD is interesting, but <a class="reference external" href="http://marc.info/?l=openbsd-misc&amp;m=132788027403910&amp;w=2">unlikely to be ported</a>. FreeBSD seems to be more
+focussed on the speed of random number generation.</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="#">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Crypto for nerds</a><ul>
+<li><a class="reference internal" href="#steps-to-prepare-a-raspberry-pi">Steps to prepare a Raspberry Pi</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#reasoning-behind-advice-above">Reasoning behind advice above</a><ul>
+<li><a class="reference internal" href="#why-a-raspberry-pi">Why a Raspberry Pi?</a></li>
+<li><a class="reference internal" href="#a-reasonably-random-rng-on-the-pi">A reasonably random RNG on the Pi</a></li>
+<li><a class="reference internal" href="#offline-use">Offline use</a></li>
+</ul>
+</li>
+</ul>
+
+<div class="sourcelink">
+  <a href="_sources/index.txt" rel="nofollow">
+    Show page source
+  </a>
+</div>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+  <div class="related bottom">
+  <nav id="rellinks">
+    <ul>
+    </ul>
+  </nav>
+  <nav id="breadcrumbs">
+    <ul>
+      <li><a href="#">Crypto for nerds 0.1 documentation</a></li> 
+    </ul>
+  </nav>
+  </div>
+  <footer id="pagefooter">&copy; 2014, Marc Brinkmann.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a>
+      1.2.1
+        with the <a href="http://github.com/irskep/sphinx-better-theme">
+          better</a> theme.
+
+  </footer>
+
+  
+  </body>
+</html>
