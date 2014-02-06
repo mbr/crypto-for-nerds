@@ -1,5 +1,5 @@
 Crypto for nerds
-****************
+================
 
 This documents is supposed to be an easy to follow guide for best-practices
 when using GPG_. The first part is a concise recipe that is easy to follow,
