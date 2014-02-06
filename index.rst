@@ -12,22 +12,34 @@ Steps to prepare a Raspberry Pi
 -------------------------------
 
 1. Download a raspbian image from http://www.raspberrypi.org/downloads.
-   Possible SHA-1 checksum::
+   Check the SHA-1 checksum::
 
      9d0afbf932ec22e3c29d793693f58b0406bcab86  2014-01-07-wheezy-raspbian.zip
 
-2. Unzip and write to sdcard::
+2. Unzip and write to an sdcard::
 
      cd /tmp
      unzip 2014-01-07-wheezy-raspbian.zip
      sudo dd if=2014-01-07-wheezy-raspbian.img of=/dev/sdX bs=4M
 
-3. Boot the SD-card in the Raspberry Pi, **without any network cable plugged
-   in.**
+3. Boot the SD-card in the Raspberry Pi, with a network cable plugged in.
 
-4. Login as ``pi``, password ``raspberry``. Set a new password for ``pi``::
+4. Login as ``pi``, password ``raspberry``. Set a new password::
 
      passwd
+
+5. Update the system::
+
+     sudo apt-get update
+     sudo apt-get dist-upgrade
+
+5. Activate the hardware random number generator::
+
+     echo 'bcm2708_rng' | sudo tee -a /etc/modules
+     sudo modprobe bcm2708_rng
+     sudo apt-get install rng-tools
+
+6. **Unplug** the network cable (or remove the WiFi module).
 
 Reasoning behind advice above
 =============================
@@ -73,21 +85,6 @@ there are many ways to `smuggle out
 <http://blog.cr.yp.to/20140205-entropy.html>`_ information about the secret key
 - or generate bad keys altogether.
 
-
-Measured: 2 Minutes with HWRNG, 5+ Minutes without
-
-* Install raspbian
-* update, dist-upgrade
-
-echo 'bcm2708_rng' | sudo tee -a /etc/modules
-sudo modprobe bcm2708_rng
-sudo apt-get install rng-tools
-echo HRNGDEVICE=/dev/hwrng | sudo tee -a /etc/default/rng-tools
-sudo /etc/init.d/rng-tools restart
-
-
-test asdasd
------------
 
 .. _GPG: https://en.wikipedia.org/wiki/GNU_Privacy_Guard
 .. _rngd: http://man.he.net/man8/rngd
