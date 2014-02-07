@@ -54,11 +54,11 @@ TBW
 A reasonably random RNG on the Pi
 ---------------------------------
 
-The LRNG (Linux random number generator) isn't perfect[1]_, nor is the hardware
+The LRNG (Linux random number generator) isn't perfect [1]_, nor is the hardware
 random number generator supplied by Broadcom, as there aren't enough technical
 specifications published. The best no-effort bet currently available seems to
 be using a combination of both and hoping that at least one lives up to its
-security promises[2]_.
+security promises [2]_.
 
 rng-tools includes the rngd_, which is sparse on documentation. It will add
 entropy to the kernel's own entropy pool, 512 bits every 60 seconds with the
@@ -69,7 +69,7 @@ GPG_ or entering the passphrase, there should be randomness from both sources
 used to generate the gpg-key.
 
 Keep in mind that less entropy is available on a Raspberry Pi. Normally, the
-LRNG uses[1]_ events like keyboard input, mouse events, interrupts, network
+LRNG uses [1]_ events like keyboard input, mouse events, interrupts, network
 traffic and disk I/O times from physical harddrives. On the Pi, usually there's
 no mouse connected, there are fewer interrupts and we're not operating with a
 network connection. The disk I/O part is far less useful when no moving parts
