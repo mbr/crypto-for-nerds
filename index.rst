@@ -54,11 +54,11 @@ TBW
 A reasonably random RNG on the Pi
 ---------------------------------
 
-The LRNG (Linux random number generator) isn't perfect [1]_, nor is the hardware
-random number generator supplied by Broadcom, as there aren't enough technical
-specifications published. The best no-effort bet currently available seems to
-be using a combination of both and hoping that at least one lives up to its
-security promises [2]_.
+The LRNG (Linux random number generator) isn't perfect (see [1]_ and the newer
+[5]_), nor is the hardware random number generator supplied by Broadcom, as
+there aren't enough technical specifications published. The best no-effort bet
+currently available seems to be using a combination of both and hoping that at
+least one lives up to its security promises [2]_.
 
 rng-tools includes the rngd_, which is sparse on documentation. It will add
 entropy to the kernel's own entropy pool, 512 bits every 60 seconds with the
@@ -101,3 +101,4 @@ there are many ways to `smuggle out
 .. [4] OpenBSD is interesting, but `unlikely to be ported <http://marc.
        info/?l=openbsd-misc&m=132788027403910&w=2>`_. FreeBSD seems to be more
        focussed on the speed of random number generation.
+.. [5] http://eprint.iacr.org/2012/251.pdf
