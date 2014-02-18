@@ -13,6 +13,9 @@ https://github.com/mbr/crypto-for-nerds.
 Steps to prepare a Raspberry Pi
 -------------------------------
 
+This section is optional, see the explanation below (_`Why a Raspberry Pi? Why
+Raspbian?`).
+
 1. Download a raspbian image from http://www.raspberrypi.org/downloads.
    Check the SHA-1 checksum::
 
@@ -46,10 +49,44 @@ Steps to prepare a Raspberry Pi
 Reasoning behind advice above
 =============================
 
-Why a Raspberry Pi?
--------------------
+On using a master key
+---------------------
 
-TBW
+There is always a chance that a machine can be compromised and hostile software
+be installed. At that point, any security provided by encryption is essentially
+void: GPG cannot use a `key-agreement protocol <https://en.wikipedia.org/wiki
+/Key-agreement_protocol>`_ and therefore cannot use `perfect forward secrecy
+<https://en.wikipedia.org/wiki/Key-agreement_protocol>`_ either. As a result,
+if an attacker gains access to the private key once, all previous messages
+encrypted using the public key are decryptable for him and he can forge
+signatures at will.
+
+This also means that any signatures on the public key -- the Web of Trust --
+would also be worthless, even harmful; a new key would have to be generated and
+signed all over and the old one speedily revoked.
+
+A solution is to use a key without expiration as a master key and creating
+subkeys with limited time validity for every day use. This limits the amount
+of damage a key compromization can cause, provided the master key is stored
+securely [6]_.
+
+Why a Raspberry Pi? Why Raspbian?
+---------------------------------
+
+The section above describes the structure of the setup, a master key is only
+used to generate subkeys for every day use, while collecting signatures from
+others. Security is greatly enhanced by storing the master key on a seperate
+device without direct internet access that is only used for key generation.
+While it is not impossible for a determined attacker to gain access to these,
+it is much harder than "just" compromising a machine with network access.
+
+The Raspberry Pi is chosen here as a pragmatic choice - it is small, cheap,
+readily available and should provide a good increase in security [7]_.
+
+Note that it is possible to eschew the Pi and simply store the master key on
+your everyday computer. This is still a decent setup and a more pragmatic
+choice. Just ignore all steps from the _`Steps to prepare a Raspberry Pi`
+section.
 
 A reasonably random RNG on the Pi
 ---------------------------------
@@ -112,3 +149,8 @@ there are many ways to `smuggle out
        info/?l=openbsd-misc&m=132788027403910&w=2>`_. FreeBSD seems to be more
        focussed on the speed of random number generation.
 .. [5] http://eprint.iacr.org/2012/251.pdf
+.. [6] This is essentially creating a private `certificate authority
+       <https://en.wikipedia.org/wiki/Certificate_Authority>`_.
+.. [7]  If your actual needs for security are even higher than those presented
+        here, you should not be reading this document, but know everything in
+        it and more.
