@@ -68,13 +68,23 @@ generate entropy from events like installing the necessary software, running
 GPG_ or entering the passphrase, there should be randomness from both sources
 used to generate the gpg-key.
 
+There is one drawback by using rngd_: It increases the entropy counter whenever
+it feeds entropy from the hardware random number generator into the kernel by
+calling ``ioctl(fd, RNDADDENTROPY, ...)``. This makes sense if the hardware
+random number generator is somewhat trustworthy trustworthy and increases the
+entropy output quite a bit. Since we only want to generate one or two gpg-keys,
+we can err on the side of caution and use the supplied script, which will do
+the same (feed entropy) without increasing the entropy estimate. According to
+[5]_, section 2.3.1 and 3.1, this will guarantee that we are no worse off than
+having never used the hardware random number generator at all.
+
 Keep in mind that less entropy is available on a Raspberry Pi. Normally, the
 LRNG uses [1]_ events like keyboard input, mouse events, interrupts, network
 traffic and disk I/O times from physical harddrives. On the Pi, usually there's
 no mouse connected, there are fewer interrupts and we're not operating with a
 network connection. The disk I/O part is far less useful when no moving parts
 are involved (as is the case with SD-cards), leaving on the keyboard as a
-reasonable entropy source.
+reasonable entropy source. All this makes the process a lot slower.
 
 Offline use
 -----------
