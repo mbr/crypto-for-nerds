@@ -82,6 +82,14 @@ it is much harder than "just" compromising a machine with network access.
 
 The Raspberry Pi is chosen here as a pragmatic choice - it is small, cheap,
 readily available and should provide a good increase in security [7]_.
+Raspbian is chosen mainly because it is a wide-spread distro for the Pi.
+A custom made distro just for this document would make things easier, but also
+require more trust on the users side. When downloading raspbian, be sure to
+check the official download site to see if the SHA1-Checksum for the image
+matches.
+
+Any enhancements made to the setup are made through a shell script that can be
+reviewed before running on the Pi.
 
 Note that it is possible to eschew the Pi and simply store the master key on
 your everyday computer. This is still a decent setup and a more pragmatic
