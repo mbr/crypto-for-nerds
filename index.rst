@@ -29,17 +29,22 @@ Raspbian?`).
 
 3. Boot the SD-card in the Raspberry Pi, with a network cable plugged in.
 
-4. Configure raspbian as usual, remember to set a secure password for the
-   ``pi`` user. Disable SSH.
+4. Login as ``pi``, password ``raspberry``. Set a new password::
 
-5. Download, verify and run the setup script::
+     passwd
 
-     wget 'http://mbr.github.io/crypto-for-nerds/setup.sh'
-     sha1sum setup.sh
-     cat setup.sh
-     sh -x setup.sh
+5. Update the system::
 
-5. **Unplug** the network cable (or remove the WiFi module).
+     sudo apt-get update
+     sudo apt-get dist-upgrade
+
+5. Activate the hardware random number generator::
+
+     echo 'bcm2708_rng' | sudo tee -a /etc/modules
+     sudo modprobe bcm2708_rng
+     sudo apt-get install rng-tools
+
+6. **Unplug** the network cable (or remove the WiFi module).
 
 Reasoning behind advice above
 =============================
@@ -138,6 +143,9 @@ access to the SD card (this is described in the ``Configuration``-section of
 the `random(4) <http://man7.org/linux/man-pages/man4/random.4.html>`_
 manpage.)
 
+Raspbian handles this already, as it is based on debian_, through the the
+``/etc/init.d/urandom``-service.
+
 Offline use
 -----------
 
@@ -151,6 +159,7 @@ software is not compromised, otherwise there are many ways to `smuggle out
 
 .. _GPG: https://en.wikipedia.org/wiki/GNU_Privacy_Guard
 .. _rngd: http://man.he.net/man8/rngd
+.. _debian: https://debian.org
 
 .. [1] http://www.cs.utk.edu/~dunigan/cns05/AnalysisOfLinuxRNG.pdf -- although
        this paper is fairly old and the kernel has been improved since.
