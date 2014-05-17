@@ -132,6 +132,17 @@ network connection. The disk I/O part is far less useful when no moving parts
 are involved (as is the case with SD-cards), leaving on the keyboard as a
 reasonable entropy source. All this makes the process a lot slower.
 
+Saving the random state between reboots
+---------------------------------------
+
+Another issue is that the raspberry hardware, especially with almost no
+interaction with the outside world (like networking) has very little ways to
+gain entropy after booting. For this reason, the state of the LRNG should be
+saved and loaded between reboots, at least foiling an attacker that has no
+access to the SD card (this is described in the ``Configuration``-section of
+the `random(4) <http://man7.org/linux/man-pages/man4/random.4.html>`_
+manpage.)
+
 Offline use
 -----------
 
