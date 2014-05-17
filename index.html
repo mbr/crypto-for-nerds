@@ -76,28 +76,22 @@ sudo dd if=2014-01-07-wheezy-raspbian.img of=/dev/sdX bs=4M
 </li>
 <li><p class="first">Boot the SD-card in the Raspberry Pi, with a network cable plugged in.</p>
 </li>
-<li><p class="first">Login as <tt class="docutils literal"><span class="pre">pi</span></tt>, password <tt class="docutils literal"><span class="pre">raspberry</span></tt>. Set a new password:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="n">passwd</span>
-</pre></div>
-</div>
+<li><p class="first">Configure raspbian as usual, remember to set a secure password for the
+<tt class="docutils literal"><span class="pre">pi</span></tt> user. Disable SSH.</p>
 </li>
-<li><p class="first">Update the system:</p>
-<div class="highlight-python"><div class="highlight"><pre>sudo apt-get update
-sudo apt-get dist-upgrade
+<li><p class="first">Download, verify (the SHA256 sum of <tt class="docutils literal"><span class="pre">setup.sh</span></tt> is
+<tt class="docutils literal"><span class="pre">e34328c8e2948dfc00cf3d1beee1c979825f28aa09b8c6fd5935638d9021a8dc</span></tt>) and
+run the setup script:</p>
+<div class="highlight-python"><div class="highlight"><pre>wget &#39;http://mbr.github.io/crypto-for-nerds/setup.sh&#39;
+sha256sum setup.sh
+cat setup.sh
+sh -x setup.sh
 </pre></div>
 </div>
 </li>
 </ol>
-<ol class="arabic" start="5">
-<li><p class="first">Activate the hardware random number generator:</p>
-<div class="highlight-python"><div class="highlight"><pre>echo &#39;bcm2708_rng&#39; | sudo tee -a /etc/modules
-sudo modprobe bcm2708_rng
-sudo apt-get install rng-tools
-</pre></div>
-</div>
-</li>
-<li><p class="first"><strong>Unplug</strong> the network cable (or remove the WiFi module).</p>
-</li>
+<ol class="arabic simple" start="5">
+<li><strong>Unplug</strong> the network cable (or remove the WiFi module).</li>
 </ol>
 </div>
 </div>
