@@ -33,6 +33,6 @@ sudo tee /etc/rc.local << EOF
 EOF
 
 # run the randmix daemon
-"$RANDMIX"
+sudo "$RANDMIXD"
 
 echo 'All good, you can now remove the network cable'
