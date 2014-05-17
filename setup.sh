@@ -27,12 +27,12 @@ sudo modprobe bcm2708_rng
 # output the randmix daemon to review
 cat "$RANDMIXD"
 
-if ! grep "$RANDMIXD" /etc/rc.local; then
-  # add randmixd to rc.local, because sysv5 init is a nightmare
-  echo '$RANDMIXD' | sudo tee -a /etc/rc.local
-fi;
+sudo tee /etc/rc.local << EOF
+#!/bin/sh -e
+"$RANDMIXD"
+EOF
 
 # run the randmix daemon
-echo "$RANDMIX"
+"$RANDMIX"
 
 echo 'All good, you can now remove the network cable'
