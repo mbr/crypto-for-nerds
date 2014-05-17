@@ -15,7 +15,7 @@ sudo apt-get install -y python-daemon
 
 # download randmix
 sudo wget "$RANDMIXD_URL" -O "$RANDMIXD"
-chmod +x "$RANDMIXD"
+sudo chmod +x "$RANDMIXD"
 
 # check if the SHA256 hash of RANDMIXD is correct.
 if [ "$(sha256sum $RANDMIXD)" != "$RANDMIXD_SHA256  $RANDMIXD" ]; then
