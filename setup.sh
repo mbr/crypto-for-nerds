@@ -4,7 +4,7 @@ set -e
 
 RANDMIXD="/usr/local/bin/randmixd.py"
 RANDMIXD_URL="https://raw.github.com/mbr/crypto-for-nerds/master/randmixd.py"
-RANDMIXD_SHA256="b236371f085d2a739f8ea40777f2a6ac52974a43f59858375e249ea328d4cf9e"
+RANDMIXD_SHA256="94b3a8e958b7b37b0c3943d521ef8cf8129530f2773e042d5aaa31a0ebace300"
 RANDMIXD_INIT="/etc/init.d/randmixd"
 RANDMIXD_PIDFILE="/var/run/randmixd.pid"
 
