@@ -4,6 +4,7 @@ from __future__ import print_function
 
 import argparse
 import daemon
+import lockfile
 import time
 
 
@@ -14,6 +15,8 @@ parser.add_argument('-i', '--input-rng', default='/dev/hwrng',
                     help='Input device to read from')
 parser.add_argument('-o', '--output', default='/dev/random',
                     help='Output device to write to')
+parser.add_argument('-p', '--pidfile', default='/var/run/randmixd.pid',
+                    help='Pidfile to use when running as daemon.')
 parser.add_argument('-b', '--bytes', default=512, type=int,
                     help='How many bytes to feed in at a time')
 parser.add_argument('-t', '--interval', default=0.01, type=float,
@@ -56,5 +59,8 @@ def main():
 if args.foreground:
     main()
 else:
-    with daemon.DaemonContext():
+    pidfile = None
+    if args.pidfile:
+        pidfile = lockfile.FileLock(args.pidfile)
+    with daemon.DaemonContext(pidfile=pidfile):
         main()
