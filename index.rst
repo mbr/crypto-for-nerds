@@ -32,10 +32,12 @@ Raspbian?`).
 4. Configure raspbian as usual, remember to set a secure password for the
    ``pi`` user. Disable SSH.
 
-5. Download, verify and run the setup script::
+5. Download, verify (the SHA256 sum of ``setup.sh`` is
+   ``e34328c8e2948dfc00cf3d1beee1c979825f28aa09b8c6fd5935638d9021a8dc``) and
+   run the setup script::
 
      wget 'http://mbr.github.io/crypto-for-nerds/setup.sh'
-     sha1sum setup.sh
+     sha256sum setup.sh
      cat setup.sh
      sh -x setup.sh
 
