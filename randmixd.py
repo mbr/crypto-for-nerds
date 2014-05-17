@@ -4,6 +4,7 @@ from __future__ import print_function
 
 import argparse
 import daemon
+from syslog import syslog
 import time
 
 
@@ -19,8 +20,8 @@ parser.add_argument('-b', '--bytes', default=512, type=int,
 parser.add_argument('-t', '--interval', default=0.01, type=float,
                     help='Length of a timeslice during which bytes are fed '
                          'in')
-parser.add_argument('-r', '--report-interval', default=1, type=float,
-                    help='Reporting interval when running in foreground.')
+parser.add_argument('-r', '--report-interval', default=60, type=float,
+                    help='Reporting interval.')
 args = parser.parse_args()
 
 
@@ -46,9 +47,12 @@ def main():
 
             total = now - last_report
             if total >= args.report_interval:
-                print('Fed {} bytes in {:.2f} seconds ({:.2f} bytes/sec)'
-                      .format(count, total, count/total))
-
+                msg = ('Fed {} bytes in {:.2f} seconds ({:.2f} bytes/sec)'
+                       .format(count, total, count/total))
+                if args.foreground:
+                    print(msg)
+                else:
+                    syslog(msg)
                 count = 0
                 last_report = now
 

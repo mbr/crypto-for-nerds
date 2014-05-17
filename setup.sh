@@ -4,7 +4,7 @@ set -e
 
 RANDMIXD="/usr/local/bin/randmixd.py"
 RANDMIXD_URL="https://raw.github.com/mbr/crypto-for-nerds/master/randmixd.py"
-RANDMIXD_SHA256="b236371f085d2a739f8ea40777f2a6ac52974a43f59858375e249ea328d4cf9e"
+RANDMIXD_SHA256="e45a65aa3f43af185165cd759b28a39c04e1818486b81b9aea3955f28648e4f7"
 
 # update system
 sudo apt-get -y update
