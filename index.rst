@@ -29,22 +29,17 @@ Raspbian?`).
 
 3. Boot the SD-card in the Raspberry Pi, with a network cable plugged in.
 
-4. Login as ``pi``, password ``raspberry``. Set a new password::
+4. Configure raspbian as usual, remember to set a secure password for the
+   ``pi`` user. Disable SSH.
 
-     passwd
+5. Download, verify and run the setup script::
 
-5. Update the system::
+     wget 'http://mbr.github.io/crypto-for-nerds/setup.sh'
+     sha1sum setup.sh
+     cat setup.sh
+     sh -x setup.sh
 
-     sudo apt-get update
-     sudo apt-get dist-upgrade
-
-5. Activate the hardware random number generator::
-
-     echo 'bcm2708_rng' | sudo tee -a /etc/modules
-     sudo modprobe bcm2708_rng
-     sudo apt-get install rng-tools
-
-6. **Unplug** the network cable (or remove the WiFi module).
+5. **Unplug** the network cable (or remove the WiFi module).
 
 Reasoning behind advice above
 =============================
