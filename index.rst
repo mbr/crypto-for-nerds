@@ -137,9 +137,8 @@ Offline use
 
 Not connecting the machine with the "master" key to the internet has numerous
 advantages, mainly it's much harder to access the private key from the outside
-[3]_. This still means that great
-care must be taken that the installed software is not compromised, otherwise
-there are many ways to `smuggle out
+[3]_. This still means that great care must be taken that the installed
+software is not compromised, otherwise there are many ways to `smuggle out
 <http://blog.cr.yp.to/20140205-entropy.html>`_ information about the secret key
 - or generate bad keys altogether.
 
