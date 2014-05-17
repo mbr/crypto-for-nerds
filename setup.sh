@@ -26,7 +26,7 @@ echo 'bcm2708_rng' | sudo tee -a /etc/modules
 sudo modprobe bcm2708_rng
 
 # install init script
-sudo tee $RANDMIXD_INIT <<<EOF
+sudo tee $RANDMIXD_INIT <<EOF
 #! /bin/sh
 
 set -e
