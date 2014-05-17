@@ -58,6 +58,8 @@ Source for this document is available at
 <a class="reference external" href="https://github.com/mbr/crypto-for-nerds">https://github.com/mbr/crypto-for-nerds</a>.</p>
 <div class="section" id="steps-to-prepare-a-raspberry-pi">
 <h2>Steps to prepare a Raspberry Pi<a class="headerlink" href="#steps-to-prepare-a-raspberry-pi" title="Permalink to this headline">¶</a></h2>
+<p>This section is optional, see the explanation below (<span class="target" id="why-a-raspberry-pi-why-raspbian">Why a Raspberry Pi? Why
+Raspbian?</span>).</p>
 <ol class="arabic">
 <li><p class="first">Download a raspbian image from <a class="reference external" href="http://www.raspberrypi.org/downloads">http://www.raspberrypi.org/downloads</a>.
 Check the SHA-1 checksum:</p>
@@ -101,17 +103,52 @@ sudo apt-get install rng-tools
 </div>
 <div class="section" id="reasoning-behind-advice-above">
 <h1>Reasoning behind advice above<a class="headerlink" href="#reasoning-behind-advice-above" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="why-a-raspberry-pi">
-<h2>Why a Raspberry Pi?<a class="headerlink" href="#why-a-raspberry-pi" title="Permalink to this headline">¶</a></h2>
-<p>TBW</p>
+<div class="section" id="on-using-a-master-key">
+<h2>On using a master key<a class="headerlink" href="#on-using-a-master-key" title="Permalink to this headline">¶</a></h2>
+<p>There is always a chance that a machine can be compromised and hostile software
+be installed. At that point, any security provided by encryption is essentially
+void: GPG cannot use a <a class="reference external" href="https://en.wikipedia.org/wiki/Key-agreement_protocol">key-agreement protocol</a> and therefore cannot use <a class="reference external" href="https://en.wikipedia.org/wiki/Key-agreement_protocol">perfect forward secrecy</a> either. As a result,
+if an attacker gains access to the private key once, all previous messages
+encrypted using the public key are decryptable for him and he can forge
+signatures at will.</p>
+<p>This also means that any signatures on the public key &#8211; the Web of Trust &#8211;
+would also be worthless, even harmful; a new key would have to be generated and
+signed all over and the old one speedily revoked.</p>
+<p>A solution is to use a key without expiration as a master key and creating
+subkeys with limited time validity for every day use. This limits the amount
+of damage a key compromization can cause, provided the master key is stored
+securely <a class="footnote-reference" href="#id16" id="id1">[6]</a>.</p>
+</div>
+<div class="section" id="id2">
+<h2>Why a Raspberry Pi? Why Raspbian?<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
+<p>The section above describes the structure of the setup, a master key is only
+used to generate subkeys for every day use, while collecting signatures from
+others. Security is greatly enhanced by storing the master key on a seperate
+device without direct internet access that is only used for key generation (see
+<a class="reference external" href="http://en.wikipedia.org/wiki/Air_gap_(networking)">air gap</a>). While it is
+not impossible for a determined attacker to gain access to these, it is much
+harder than &#8220;just&#8221; compromising a machine with network access.</p>
+<p>The Raspberry Pi is chosen here as a pragmatic choice - it is small, cheap,
+readily available and should provide a good increase in security <a class="footnote-reference" href="#id17" id="id3">[7]</a>.
+Raspbian is chosen mainly because it is a wide-spread distro for the Pi.
+A custom made distro just for this document would make things easier, but also
+require more trust on the users side. When downloading raspbian, be sure to
+check the official download site to see if the SHA1-Checksum for the image
+matches.</p>
+<p>Any enhancements made to the setup are made through a shell script that can be
+reviewed before running on the Pi.</p>
+<p>Note that it is possible to eschew the Pi and simply store the master key on
+your everyday computer. This is still a decent setup and a more pragmatic
+choice. Just ignore all steps from the <span class="target" id="id4">Steps to prepare a Raspberry Pi</span>
+section.</p>
 </div>
 <div class="section" id="a-reasonably-random-rng-on-the-pi">
 <h2>A reasonably random RNG on the Pi<a class="headerlink" href="#a-reasonably-random-rng-on-the-pi" title="Permalink to this headline">¶</a></h2>
-<p>The LRNG (Linux random number generator) isn&#8217;t perfect[1]_, nor is the hardware
-random number generator supplied by Broadcom, as there aren&#8217;t enough technical
-specifications published. The best no-effort bet currently available seems to
-be using a combination of both and hoping that at least one lives up to its
-security promises[2]_.</p>
+<p>The LRNG (Linux random number generator) isn&#8217;t perfect (see <a class="footnote-reference" href="#id11" id="id5">[1]</a> and the newer
+<a class="footnote-reference" href="#id15" id="id6">[5]</a>), nor is the hardware random number generator supplied by Broadcom, as
+there aren&#8217;t enough technical specifications published. The best no-effort bet
+currently available seems to be using a combination of both and hoping that at
+least one lives up to its security promises <a class="footnote-reference" href="#id12" id="id7">[2]</a>.</p>
 <p>rng-tools includes the <a class="reference external" href="http://man.he.net/man8/rngd">rngd</a>, which is sparse on documentation. It will add
 entropy to the kernel&#8217;s own entropy pool, 512 bits every 60 seconds with the
 default configuration (which will use /dev/hwrng as the input device) unless
@@ -119,49 +156,89 @@ there are already at least 2048 bits available. Since the kernel will itself
 generate entropy from events like installing the necessary software, running
 <a class="reference external" href="https://en.wikipedia.org/wiki/GNU_Privacy_Guard">GPG</a> or entering the passphrase, there should be randomness from both sources
 used to generate the gpg-key.</p>
+<p>There is one drawback by using <a class="reference external" href="http://man.he.net/man8/rngd">rngd</a>: It increases the entropy counter whenever
+it feeds entropy from the hardware random number generator into the kernel by
+calling <tt class="docutils literal"><span class="pre">ioctl(fd,</span> <span class="pre">RNDADDENTROPY,</span> <span class="pre">...)</span></tt>. This makes sense if the hardware
+random number generator is somewhat trustworthy trustworthy and increases the
+entropy output quite a bit. Since we only want to generate one or two gpg-keys,
+we can err on the side of caution and use the supplied script, which will do
+the same (feed entropy) without increasing the entropy estimate. According to
+<a class="footnote-reference" href="#id15" id="id8">[5]</a>, section 2.3.1 and 3.1, this will guarantee that we are no worse off than
+having never used the hardware random number generator at all.</p>
 <p>Keep in mind that less entropy is available on a Raspberry Pi. Normally, the
-LRNG uses[1]_ events like keyboard input, mouse events, interrupts, network
+LRNG uses <a class="footnote-reference" href="#id11" id="id9">[1]</a> events like keyboard input, mouse events, interrupts, network
 traffic and disk I/O times from physical harddrives. On the Pi, usually there&#8217;s
 no mouse connected, there are fewer interrupts and we&#8217;re not operating with a
 network connection. The disk I/O part is far less useful when no moving parts
 are involved (as is the case with SD-cards), leaving on the keyboard as a
-reasonable entropy source.</p>
+reasonable entropy source. All this makes the process a lot slower.</p>
+</div>
+<div class="section" id="saving-the-random-state-between-reboots">
+<h2>Saving the random state between reboots<a class="headerlink" href="#saving-the-random-state-between-reboots" title="Permalink to this headline">¶</a></h2>
+<p>Another issue is that the raspberry hardware, especially with almost no
+interaction with the outside world (like networking) has very little ways to
+gain entropy after booting. For this reason, the state of the LRNG should be
+saved and loaded between reboots, at least foiling an attacker that has no
+access to the SD card (this is described in the <tt class="docutils literal"><span class="pre">Configuration</span></tt>-section of
+the <a class="reference external" href="http://man7.org/linux/man-pages/man4/random.4.html">random(4)</a>
+manpage.)</p>
+<p>Raspbian handles this already, as it is based on <a class="reference external" href="https://debian.org">debian</a>, through the the
+<tt class="docutils literal"><span class="pre">/etc/init.d/urandom</span></tt>-service.</p>
 </div>
 <div class="section" id="offline-use">
 <h2>Offline use<a class="headerlink" href="#offline-use" title="Permalink to this headline">¶</a></h2>
 <p>Not connecting the machine with the &#8220;master&#8221; key to the internet has numerous
 advantages, mainly it&#8217;s much harder to access the private key from the outside
-<a class="footnote-reference" href="#id4" id="id1">[3]</a>. This still means that great
-care must be taken that the installed software is not compromised, otherwise
-there are many ways to <a class="reference external" href="http://blog.cr.yp.to/20140205-entropy.html">smuggle out</a> information about the secret key
+<a class="footnote-reference" href="#id13" id="id10">[3]</a>. This still means that great care must be taken that the installed
+software is not compromised, otherwise there are many ways to <a class="reference external" href="http://blog.cr.yp.to/20140205-entropy.html">smuggle out</a> information about the secret key
 - or generate bad keys altogether.</p>
-<table class="docutils footnote" frame="void" id="id2" rules="none">
+<table class="docutils footnote" frame="void" id="id11" rules="none">
 <colgroup><col class="label" /><col /></colgroup>
 <tbody valign="top">
-<tr><td class="label">[1]</td><td><a class="reference external" href="http://www.cs.utk.edu/~dunigan/cns05/AnalysisOfLinuxRNG.pdf">http://www.cs.utk.edu/~dunigan/cns05/AnalysisOfLinuxRNG.pdf</a> &#8211; although
+<tr><td class="label">[1]</td><td><em>(<a class="fn-backref" href="#id5">1</a>, <a class="fn-backref" href="#id9">2</a>)</em> <a class="reference external" href="http://www.cs.utk.edu/~dunigan/cns05/AnalysisOfLinuxRNG.pdf">http://www.cs.utk.edu/~dunigan/cns05/AnalysisOfLinuxRNG.pdf</a> &#8211; although
 this paper is fairly old and the kernel has been improved since.</td></tr>
 </tbody>
 </table>
-<table class="docutils footnote" frame="void" id="id3" rules="none">
+<table class="docutils footnote" frame="void" id="id12" rules="none">
 <colgroup><col class="label" /><col /></colgroup>
 <tbody valign="top">
-<tr><td class="label">[2]</td><td>Original description for turning on the hwrng:
+<tr><td class="label"><a class="fn-backref" href="#id7">[2]</a></td><td>Original description for turning on the hwrng:
 <a class="reference external" href="http://vk5tu.livejournal.com/43059.html">http://vk5tu.livejournal.com/43059.html</a></td></tr>
 </tbody>
 </table>
-<table class="docutils footnote" frame="void" id="id4" rules="none">
+<table class="docutils footnote" frame="void" id="id13" rules="none">
 <colgroup><col class="label" /><col /></colgroup>
 <tbody valign="top">
-<tr><td class="label"><a class="fn-backref" href="#id1">[3]</a></td><td>Assuming you&#8217;re trusting your hardware not to spy on you:
+<tr><td class="label"><a class="fn-backref" href="#id10">[3]</a></td><td>Assuming you&#8217;re trusting your hardware not to spy on you:
 <a class="reference external" href="http://www.spiegel.de/international/world/the-nsa-uses-powerful-toolbox">http://www.spiegel.de/international/world/the-nsa-uses-powerful-toolbox</a>
 -in-effort-to-spy-on-global-networks-a-940969.html</td></tr>
 </tbody>
 </table>
-<table class="docutils footnote" frame="void" id="id5" rules="none">
+<table class="docutils footnote" frame="void" id="id14" rules="none">
 <colgroup><col class="label" /><col /></colgroup>
 <tbody valign="top">
 <tr><td class="label">[4]</td><td>OpenBSD is interesting, but <a class="reference external" href="http://marc.info/?l=openbsd-misc&amp;m=132788027403910&amp;w=2">unlikely to be ported</a>. FreeBSD seems to be more
 focussed on the speed of random number generation.</td></tr>
+</tbody>
+</table>
+<table class="docutils footnote" frame="void" id="id15" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label">[5]</td><td><em>(<a class="fn-backref" href="#id6">1</a>, <a class="fn-backref" href="#id8">2</a>)</em> <a class="reference external" href="http://eprint.iacr.org/2012/251.pdf">http://eprint.iacr.org/2012/251.pdf</a></td></tr>
+</tbody>
+</table>
+<table class="docutils footnote" frame="void" id="id16" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id1">[6]</a></td><td>This is essentially creating a private <a class="reference external" href="https://en.wikipedia.org/wiki/Certificate_Authority">certificate authority</a>.</td></tr>
+</tbody>
+</table>
+<table class="docutils footnote" frame="void" id="id17" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id3">[7]</a></td><td>If your actual needs for security are even higher than those presented
+here, you should not be reading this document, but know everything in
+it and more.</td></tr>
 </tbody>
 </table>
 </div>
@@ -180,8 +257,10 @@ focussed on the speed of random number generation.</td></tr>
 </ul>
 </li>
 <li><a class="reference internal" href="#reasoning-behind-advice-above">Reasoning behind advice above</a><ul>
-<li><a class="reference internal" href="#why-a-raspberry-pi">Why a Raspberry Pi?</a></li>
+<li><a class="reference internal" href="#on-using-a-master-key">On using a master key</a></li>
+<li><a class="reference internal" href="#id2">Why a Raspberry Pi? Why Raspbian?</a></li>
 <li><a class="reference internal" href="#a-reasonably-random-rng-on-the-pi">A reasonably random RNG on the Pi</a></li>
+<li><a class="reference internal" href="#saving-the-random-state-between-reboots">Saving the random state between reboots</a></li>
 <li><a class="reference internal" href="#offline-use">Offline use</a></li>
 </ul>
 </li>
