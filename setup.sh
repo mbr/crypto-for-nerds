@@ -11,9 +11,11 @@ RANDMIXD_PIDFILE="/var/run/randmixd.py"
 # update system
 sudo apt-get -y update
 sudo apt-get -y dist-upgrade
+sudo apt-get install -y python-daemon
 
 # download randmix
 sudo wget "$RANDMIXD_URL" -O "$RANDMIXD"
+chmod +x "$RANDMIXD"
 
 # check if the SHA256 hash of RANDMIXD is correct.
 if [ "$(sha256sum $RANDMIXD)" != "$RANDMIXD_SHA256  $RANDMIXD" ]; then
@@ -26,7 +28,7 @@ echo 'bcm2708_rng' | sudo tee -a /etc/modules
 sudo modprobe bcm2708_rng
 
 # install init script
-sudo tee $RANDMIXD_INIT <<EOF
+sudo tee "$RANDMIXD_INIT" <<EOF
 #! /bin/sh
 
 set -e
@@ -34,10 +36,9 @@ umask 022
 
 . /lib/lsb/init-functions
 
-case "$1" in
-  log_daemon_msg "Starting randmixd" "randmixd" || true
-
+case "\$1" in
   start)
+  log_daemon_msg "Starting randmixd" "randmixd" || true
   if start-stop-daemon --start --quiet --oknodo --pidfile $RANDMIXD_PIDFILE --exec $RANDMIXD; then
       log_end_msg 0 || true
   else
@@ -61,12 +62,12 @@ esac
 exit 0
 EOF
 
-sudo chmod +x $RANDMIXD_INIT
+sudo chmod +x "$RANDMIXD_INIT"
 
 # output the randmix daemon to review
-cat $RANDMIXD
+cat "$RANDMIXD"
 
 # run the randmix daemon
-echo $RANDMIX
+echo "$RANDMIX"
 
 echo 'All good, you can now remove the network cable'
