@@ -76,9 +76,10 @@ Why a Raspberry Pi? Why Raspbian?
 The section above describes the structure of the setup, a master key is only
 used to generate subkeys for every day use, while collecting signatures from
 others. Security is greatly enhanced by storing the master key on a seperate
-device without direct internet access that is only used for key generation.
-While it is not impossible for a determined attacker to gain access to these,
-it is much harder than "just" compromising a machine with network access.
+device without direct internet access that is only used for key generation (see
+`air gap <http://en.wikipedia.org/wiki/Air_gap_(networking)>`_). While it is
+not impossible for a determined attacker to gain access to these, it is much
+harder than "just" compromising a machine with network access.
 
 The Raspberry Pi is chosen here as a pragmatic choice - it is small, cheap,
 readily available and should provide a good increase in security [7]_.
