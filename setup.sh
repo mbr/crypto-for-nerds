@@ -6,7 +6,7 @@ RANDMIXD="/usr/local/bin/randmixd.py"
 RANDMIXD_URL="https://raw.github.com/mbr/crypto-for-nerds/master/randmixd.py"
 RANDMIXD_SHA256="b236371f085d2a739f8ea40777f2a6ac52974a43f59858375e249ea328d4cf9e"
 RANDMIXD_INIT="/etc/init.d/randmixd"
-RANDMIXD_PIDFILE="/var/run/randmixd.py"
+RANDMIXD_PIDFILE="/var/run/randmixd.pid"
 
 # update system
 sudo apt-get -y update
