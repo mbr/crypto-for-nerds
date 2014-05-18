@@ -33,7 +33,7 @@ Raspbian?`).
    ``pi`` user. Disable SSH.
 
 5. Download, verify (the SHA256 sum of ``setup.sh`` is
-   ``e34328c8e2948dfc00cf3d1beee1c979825f28aa09b8c6fd5935638d9021a8dc``) and
+   ``4f40457424d1e9b24b91622a5b26300bb2b7b9dacf07d178b7e75726ab989205``) and
    run the setup script::
 
      wget 'http://mbr.github.io/crypto-for-nerds/setup.sh'
